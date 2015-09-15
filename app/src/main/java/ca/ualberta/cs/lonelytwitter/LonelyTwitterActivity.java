@@ -23,15 +23,23 @@ public class LonelyTwitterActivity extends Activity {
 	private static final String FILENAME = "file.sav";
 	private EditText bodyText;
 	private ListView oldTweetsList;
-	
+	private ArrayList<Tweet> tweetList;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+        Tweetable tweet;
+    try{
+        tweet = new ImpotantTweet("longer than 140 characters.");
+    }catch(IllegalArgumentException e){
+        e.printStackTrace();
+    }
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
 		bodyText = (EditText) findViewById(R.id.body);
 		Button saveButton = (Button) findViewById(R.id.save);
+        Button clearButton = (Button) findViewById(R.id.clear);
 		oldTweetsList = (ListView) findViewById(R.id.oldTweetsList);
 
 		saveButton.setOnClickListener(new View.OnClickListener() {
@@ -40,10 +48,16 @@ public class LonelyTwitterActivity extends Activity {
 				setResult(RESULT_OK);
 				String text = bodyText.getText().toString();
 				saveInFile(text, new Date(System.currentTimeMillis()));
-				finish();
+				onStart();
 
 			}
 		});
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                setResult(RESULT_OK);
+
+            }
+        });
 	}
 
 	@Override
@@ -83,6 +97,7 @@ public class LonelyTwitterActivity extends Activity {
 					Context.MODE_APPEND);
 			fos.write(new String(date.toString() + " | " + text)
 					.getBytes());
+            fos.write('\n');
 			fos.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
