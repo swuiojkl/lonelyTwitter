@@ -23,35 +23,34 @@ import android.widget.ListView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+public class LonelyTwitterActivity extends Activity implements MyObserver {
 
-public class LonelyTwitterActivity extends Activity {
-
-	private static final String FILENAME = "file.sav";
-	private EditText bodyText;
-	private ListView oldTweetsList;
-	private ArrayList<Tweet> tweets;
-	private ArrayAdapter<Tweet> adapter;
+	private static final String FILENAME = "file.sav"; // Model
+	private EditText bodyText; // View
+	private ListView oldTweetsList; // View
+	private ArrayList<Tweet> tweets; // Controller
+	private ArrayAdapter<Tweet> adapter; // Controller
 
 
-	/** Called when the activity is first created. */
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		bodyText = (EditText) findViewById(R.id.body);
-		Button saveButton = (Button) findViewById(R.id.save);
-		oldTweetsList = (ListView) findViewById(R.id.oldTweetsList);
+		bodyText = (EditText) findViewById(R.id.body);//View
+		Button saveButton = (Button) findViewById(R.id.save);//View
+		oldTweetsList = (ListView) findViewById(R.id.oldTweetsList);//View
 
 		saveButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
 				setResult(RESULT_OK);
-				String text = bodyText.getText().toString();
-				tweets.add(new NormalTweet(text));
-				saveInFile();
-				adapter.notifyDataSetChanged();
+				String text = bodyText.getText().toString(); // move to controller
+				tweets.add(new NormalTweet(text)); // move to controller
+				saveInFile(); // move to model
+				adapter.notifyDataSetChanged(); // Controller
 			}
 		});
 	}
@@ -60,14 +59,15 @@ public class LonelyTwitterActivity extends Activity {
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
-		loadFromFile();
+		loadFromFile();  // Model
 		if (tweets == null) {
 			throw new RuntimeException();
 		}
-		adapter = new ArrayAdapter<Tweet>(this, R.layout.list_item, tweets);
-		oldTweetsList.setAdapter(adapter);
+		adapter = new ArrayAdapter<Tweet>(this, R.layout.list_item, tweets); // Controller
+		oldTweetsList.setAdapter(adapter); // View
 	}
 
+	// move to Model
 	private void loadFromFile() {
 		try {
 			FileInputStream fis = openFileInput(FILENAME);
@@ -83,7 +83,8 @@ public class LonelyTwitterActivity extends Activity {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
+	// move to Model
 	private void saveInFile() {
 		try {
 			FileOutputStream fos = openFileOutput(FILENAME,
@@ -98,5 +99,9 @@ public class LonelyTwitterActivity extends Activity {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void myNotify(MyObservable observable) {
+		adapter.notifyDataSetChanged();
 	}
 }

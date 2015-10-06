@@ -5,41 +5,54 @@ import java.util.ArrayList;
 /**
  * Created by wsong1 on 2015/9/28 0028.
  */
-public class TweetList {
 
-        private ArrayList<Tweet> tweets;
+public class TweetList implements MyObservable, MyObserver {
+    private ArrayList<Tweet> tweets = new ArrayList<Tweet>();
 
-        public TweetList(){
-            tweets = new ArrayList<Tweet>();
+    private volatile ArrayList<MyObserver> observers = new ArrayList<MyObserver>();
+
+    public void myNotify(MyObservable myObserverable) {
+        notifyAllObservers();
+    }
+
+    private void notifyAllObservers() {
+        for (MyObserver myObserver : observers) {
+            myObserver.myNotify(this);
         }
+    }
 
-        public TweetList(ArrayList<Tweet> list) {
-            tweets = list;
+    public void addTweet(Tweet tweet) {
+        if (tweets.contains(tweet)) {
+            throw new IllegalArgumentException();
         }
+        tweets.add(tweet);
+        tweet.addObserver(this);
+        notifyAllObservers();
+    }
 
-        public void add(Tweet tweet){
-            tweets.add(tweet);
+    public Boolean hasTweet(Tweet tweet) {
+        for (Tweet t : tweets) {
+            if (t.equals(tweet)) {
+                return Boolean.TRUE;
+            }
         }
-
-        public void delete(Tweet tweet){
-            tweets.remove(tweet);
-        }
-
-        public Boolean contains(Tweet tweet){
-            return tweets.contains(tweet);
-        }
-
-        public int count(){
-            return tweets.size();
-        }
-
-        public void clear(){
-            tweets.clear();
-        }
-
-        public ArrayList<Tweet> get(){
-            return tweets;
-        }
+        return Boolean.FALSE;
+    }
 
 
+    public void removeTweet(Tweet tweet) {
+        tweets.remove(tweet);
+    }
+
+    public Boolean contains(Tweet tweet) {
+        return tweets.contains(tweet);
+    }
+
+    public int getCount() {
+        return tweets.size();
+    }
+
+    public void addObserver(MyObserver observer) {
+        observers.add(observer);
+    }
 }
