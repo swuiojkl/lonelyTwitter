@@ -14,8 +14,10 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,8 +28,30 @@ import com.google.gson.reflect.TypeToken;
 public class LonelyTwitterActivity extends Activity implements MyObserver {
 
 	private static final String FILENAME = "file.sav"; // Model
+
+	private LonelyTwitterActivity activiy = this;
+	public Button getSaveButton() {
+		return saveButton;
+	}
+
+	private Button saveButton;
+
+	public EditText getBodyText() {
+		return bodyText;
+	}
+
 	private EditText bodyText; // View
+
+	public ListView getOldTweetsList() {
+		return oldTweetsList;
+	}
+
 	private ListView oldTweetsList; // View
+
+	public ArrayList<Tweet> getTweets() {
+		return tweets;
+	}
+
 	private ArrayList<Tweet> tweets; // Controller
 	private ArrayAdapter<Tweet> adapter; // Controller
 
@@ -40,8 +64,15 @@ public class LonelyTwitterActivity extends Activity implements MyObserver {
 		setContentView(R.layout.main);
 
 		bodyText = (EditText) findViewById(R.id.body);//View
-		Button saveButton = (Button) findViewById(R.id.save);//View
+		saveButton = (Button) findViewById(R.id.save);
 		oldTweetsList = (ListView) findViewById(R.id.oldTweetsList);//View
+
+		oldTweetsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				Intent intent = new Intent(activiy ,EditTweetActivity.class);
+				startActivity(intent);
+			}
+		});
 
 		saveButton.setOnClickListener(new View.OnClickListener() {
 
