@@ -83,15 +83,40 @@ public class LonelyTwitterActivityTest extends ActivityInstrumentationTestCase2 
         getInstrumentation().removeMonitor(receiverActivityMonitor);
 
         // test that the tweet editor starts up with the correct tweet
+        assertEquals(receiverActivity.getBodyText().getText().toString(), tweetText.toString());
 
         // test that we can edit a tweet
+        tweetText = "Editted";
+        bodyText = receiverActivity.getBodyText();
+        receiverActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                bodyText.setText(tweetText);
+            }
+        });
+        getInstrumentation().waitForIdleSync();
 
         // test that we can push a save button for the edited tweet
+        Instrumentation.ActivityMonitor activityMonitor =
+                getInstrumentation().addMonitor(LonelyTwitterActivity.class.getName(),
+                        null, false);
+        saveButton = receiverActivity.getSaveButton();
+        activity.runOnUiThread(new Runnable() {
+            public void run() {
+                saveButton.performClick();
+            }
+        });
+        getInstrumentation().waitForIdleSync();
+
 
         // test that the modified tweet was saved
+        activity = (LonelyTwitterActivity)
+                activityMonitor.waitForActivityWithTimeout(1000);
+        assertTrue(activity.getTweets().get(0).getText().equals(tweetText));
 
         // test that the modified tweet is in the tweet list
+        assertEquals(((Tweet) oldTweetsList.getItemAtPosition(0)).getText(), tweetText);
 
+        getInstrumentation().removeMonitor(activityMonitor);
         receiverActivity.finish(); // close activity test is good!
     }
 

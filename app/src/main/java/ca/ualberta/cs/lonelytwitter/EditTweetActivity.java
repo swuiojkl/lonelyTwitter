@@ -4,33 +4,45 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 public class EditTweetActivity extends Activity {
-
-
-
     private Tweet tweet;
-    private Button editButton;
     private Button saveButton;
+    private EditText bodyText;
+    private EditTweetActivity activity = this;
 
-    public Button getSaveButton() {
-        return saveButton;
-    }
-
-    public Button getEditButton() {
-        return editButton;
-    }
 
     public Tweet getTweet() {
         return tweet;
+    }
+
+    public EditText getBodyText() {
+        return bodyText;
+    }
+
+    public Button getSaveButton() {
+        return saveButton;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_tweet);
+        tweet = Temp.getInstance().getTweet();
+        saveButton = (Button) findViewById(R.id.bSave);
+        bodyText = (EditText) findViewById(R.id.etEdit);
+        bodyText.setText(tweet.getText());
+        saveButton.setOnClickListener(new View.OnClickListener() {
 
+            public void onClick(View v) {
+                tweet = new NormalTweet(bodyText.getText().toString());
+                Temp.getInstance().setTweet(tweet);
+                activity.finish();
+            }
+        });
     }
 
     @Override
